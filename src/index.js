@@ -1,11 +1,13 @@
 const express = require('express');
 const Database = require('./Database');
+const path = require('path');
 
 const app = express();
 
-app.get('/', function(req, res) {
-    res.setHeader('Content-Type', 'text/plain');
-    res.send('Vous êtes à l\'accueil');
+app.use('/res', express.static(path.join(__dirname, '../res')));
+
+app.get("/",function (req, res) {
+  res.sendFile(path.join(__dirname, '../res/index.html'))
 });
 
 /* Database test */
@@ -22,7 +24,6 @@ if (argv.length === 3) {
 }
 else {
     console.log('Correct usage: ' + argv[0] + ' ' + argv[1] + ' <group name>');
-    return;
 }
 
 app.listen(8080);
