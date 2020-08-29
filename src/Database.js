@@ -23,7 +23,13 @@ class Database {
     }
   };
 
-  addJsonToDatabase(json) { //TODO promise?
+  async start() {
+    await this.connect();
+    await this.createTables();
+    await this.convertJsonToSqlite();
+  }
+
+  addJsonToDatabase(json) {
     const typeToInt = function(type) {
       return type === "Generic" ? 0 : 1;
     };
@@ -42,12 +48,15 @@ class Database {
       return;
     }
     console.log('Converting json to sqlite...');
+    this.db.run("BEGIN TRANSACTION");
     for (let i = 0; i < filesIds.length; ++i) {
       this.addJsonToDatabase(JSON.parse(fs.readFileSync('databases/json/' + this.group + '/message_' + filesIds[i] + '.json', 'utf8')));
       console.log('Processing message_' + filesIds[i] + '.json...');
       this.db.run('REPLACE INTO hashes VALUES (?, ?);', [filesIds[i], sha256File('databases/json/' + this.group + '/message_' + filesIds[i] + '.json')]);
     }
-    console.log('Conversion finished');
+    this.db.run("COMMIT", () => {
+      console.log('Conversion finished');
+    });
   }
 
   getModifiedFilesIds() {

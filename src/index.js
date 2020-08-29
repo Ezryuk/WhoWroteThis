@@ -15,9 +15,7 @@ const argv = process.argv;
 if (argv.length === 3) {
     try {
         const db = new Database(argv[2]);
-        db.connect();
-        db.createTables();
-        db.convertJsonToSqlite();
+        db.start();
     } catch (err) {
         console.error(err);
         return;
