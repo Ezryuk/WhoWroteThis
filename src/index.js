@@ -15,7 +15,16 @@ const argv = process.argv;
 if (argv.length === 3) {
     try {
         const db = new Database(argv[2]);
-        db.start();
+        const testDB = async function() {
+            await db.start();
+            let participantsSQL = await db.getParticipants();
+            let participants = [];
+            for (let i = 0; i < participantsSQL.length; ++i) {
+                participants.push(participantsSQL[i].sender);
+            }
+            console.log(await db.getRandomMessage(participants));
+        };
+        testDB();
     } catch (err) {
         console.error(err);
         return;

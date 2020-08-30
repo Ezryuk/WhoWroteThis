@@ -29,6 +29,28 @@ class Database {
     await this.convertJsonToSqlite();
   }
 
+  getParticipants() {
+    return new Promise((resolve, reject) => {
+      this.db.all('SELECT DISTINCT sender FROM messages;', [], (err, rows) => {
+        if (err) {
+          reject(err);
+        }
+        resolve(rows);
+      });
+    });
+  }
+
+  getRandomMessage(participants) {
+    return new Promise((resolve, reject) => {
+      this.db.all(`SELECT * FROM messages WHERE sender IN (${participants.map(function(){ return '?' }).join(',')}) AND type = 0 ORDER BY RANDOM() LIMIT 1;`, participants, (err, rows) => {
+        if (err) {
+          reject(err);
+        }
+        resolve(rows);
+      });
+    });
+  }
+
   addJsonToDatabase(json) {
     const typeToInt = function(type) {
       return type === "Generic" ? 0 : 1;
