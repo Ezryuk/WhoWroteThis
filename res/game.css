@@ -1,0 +1,29 @@
+body {
+	color: #fff;
+	background-color: #222;
+	text-align: center;
+}
+
+.conversation {
+	height: calc(100% - 50px);
+	overflow: auto;
+	padding: 20px;
+	padding-bottom: 0;
+	margin: auto;
+  	width: 300px;
+}
+
+.message {
+	margin-bottom: 10px;
+	float: left;
+	background-color: #404040;
+	border-bottom-left-radius: 5px;
+	border-top-left-radius: 5px;
+	display: inline-block;
+	margin-bottom: 2px;
+	clear: both;
+	padding: 7px 13px;
+	font-size: 12px;
+	border-radius: 15px;
+	line-height: 1.4;
+}
