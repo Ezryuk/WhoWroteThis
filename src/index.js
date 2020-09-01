@@ -36,7 +36,6 @@ const main = async function() {
 main().then(() => {
     io.on('connection', async function(socket) {
         wwtGame.addPlayer(new Player(socket));
-        await wwtGame.start(); //TODO need to be replaced
     });
 
     http.listen(8080, function () {

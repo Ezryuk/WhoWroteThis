@@ -10,6 +10,10 @@ class Game {
   async nextRound(force = false) {
     if (force || this.everybodyAnswered()) {
       for (const [key, value] of Object.entries(this.players)) {
+        if (this.currentMessage != null && value.lastAnswer === this.currentMessage.sender) {
+          value.points++;
+          this.simplePlayers[value.id].points++;
+        }
         value.lastAnswer = null;
       }
       await this.pickRandomMessage();
@@ -31,7 +35,7 @@ class Game {
 
   everybodyReady() {
     for (const [key, value] of Object.entries(this.players)) {
-      if (value.ready === null) {
+      if (value.ready === false) {
         return false;
       }
     }
@@ -43,6 +47,9 @@ class Game {
   }
 
   addPlayer(player) {
+    for (const [key, value] of Object.entries(this.simplePlayers)) {
+      player.socket.emit('update player', value);
+    }
     this.players[player.id] = player;
     this.simplePlayers[player.id] = new SimplifiedPlayer(player.id.substr(0, player.id.length / 2), player.pseudo);
     this.updatePlayer(this.simplePlayers[player.id]);
@@ -52,12 +59,19 @@ class Game {
     delete this.players[id];
     let sid = this.simplePlayers[id].id;
     delete this.simplePlayers[id];
+    if (this.players.length === 0) {
+      this.endGame();
+      return;
+    }
     this.updateRemovePlayer(sid);
   }
 
   async start() {
     if (this.participants.length !== 0 && this.everybodyReady()) {
       this.started = true;
+      for (const [key, value] of Object.entries(this.players)) {
+        value.socket.emit('participants', this.participants);
+      }
       await this.nextRound(true);
     }
   }
@@ -85,7 +99,7 @@ class Game {
 
   async playerAnswer(id, answer) {
     let p = this.players[id];
-    if (p !== undefined) {
+    if (p !== undefined && p.lastAnswer === null) {
       p.lastAnswer = answer;
       await this.nextRound();
     }
@@ -105,8 +119,17 @@ class Game {
 
   async playerReady(id) {
     this.players[id].ready = true;
-    this.simplePlayers[id].ready = true;
+    const sp = this.simplePlayers[id];
+    sp.ready = true;
+    this.updatePlayer(sp);
     await this.start();
+  }
+
+  async playerUnready(id) {
+    this.players[id].ready = false;
+    const sp = this.simplePlayers[id];
+    sp.ready = false;
+    this.updatePlayer(sp);
   }
 }
 

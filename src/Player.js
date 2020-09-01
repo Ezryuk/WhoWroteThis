@@ -1,7 +1,7 @@
 class Player {
 
   constructor(socket) {
-    this.pseudo = 'Guest';
+    this.pseudo = 'Guest' + Math.floor(1000 + Math.random() * 9000);
     this.id = socket.id;
     this.socket = socket;
     this.points = 0;
@@ -19,6 +19,9 @@ class Player {
     });
     this.socket.on('ready', async () => {
       await wwtGame.playerReady(this.id);
+    });
+    this.socket.on('unready', async () => {
+      await wwtGame.playerUnready(this.id);
     });
   }
 }
