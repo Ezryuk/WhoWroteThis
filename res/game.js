@@ -1,10 +1,13 @@
 var socket;
 
 const updateMessage = function(msg) {
-  console.log("new message: " + msg);
   let p = $("#message")[0];
   p.text = msg;
   p.textContent = msg;
+};
+
+const removePlayer = function(sid) {
+  console.log("remove player: " + sid);
 };
 
 const updatePlayer = function(player) {
@@ -18,5 +21,8 @@ $(document).ready(function () {
   });
   socket.on('update player', function(player) {
     updatePlayer(player);
+  });
+  socket.on('remove player', function(sid) {
+    removePlayer(sid);
   });
 });
