@@ -10,11 +10,29 @@
     <title>Who Wrote This ?</title>
   </head>
   <body>
+  	<div class="jumbotron" id="overlay">
+  		<h1 class="display-4">Who Wrote This ?</h1>
+  		<div class="ready-display">
+		    <div class="custom-control custom-checkbox">
+		      <input type="checkbox" class="custom-control-input" id="customCheck1">
+		      <label class="custom-control-label" for="customCheck1">Ready</label>
+    		</div>
+	  		<table class="table table-hover" id="readyTable">
+	  			<tr>
+	  				<th>Name</th>
+	  				<th>Ready ?</th>
+	  			</tr>
+	  		</table>
+	  	</div>
+  	</div>
+
   	<h1 class="display-4">Who Wrote This ?</h1>
   	<div class="score"></div>
   	<div class="conversation">
-  		<div class="message" id="message">Message</div>
+  		<div id="message">Message</div>
   	</div>
-  	<div class="participants"></div>
+  	<div class="participants">
+  		<table class="table table-hover" id="participants-list"></table>
+  	</div>
   </body>
 </html>
