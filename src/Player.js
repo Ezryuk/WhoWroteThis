@@ -6,6 +6,8 @@ class Player {
     this.socket = socket;
     this.points = 0;
     this.lastAnswer = null;
+    this.ready = false;
+    this.handleSocket();
   }
 
   handleSocket() {
@@ -14,6 +16,9 @@ class Player {
     });
     this.socket.on('answer', async (answer) => {
       await wwtGame.playerAnswer(this.id, answer);
+    });
+    this.socket.on('ready', async () => {
+      await wwtGame.playerReady(this.id);
     });
   }
 }

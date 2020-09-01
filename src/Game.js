@@ -29,6 +29,15 @@ class Game {
     return true;
   }
 
+  everybodyReady() {
+    for (const [key, value] of Object.entries(this.players)) {
+      if (value.ready === null) {
+        return false;
+      }
+    }
+    return true;
+  }
+
   chooseParticipants(participants) {
     this.participants = participants;
   }
@@ -47,7 +56,7 @@ class Game {
   }
 
   async start() {
-    if (this.participants.length !== 0) {
+    if (this.participants.length !== 0 && this.everybodyReady()) {
       this.started = true;
       await this.nextRound(true);
     }
@@ -92,6 +101,12 @@ class Game {
     for (const [key, value] of Object.entries(this.players)) {
       value.socket.emit('remove player', sid);
     }
+  }
+
+  async playerReady(id) {
+    this.players[id].ready = true;
+    this.simplePlayers[id].ready = true;
+    await this.start();
   }
 }
 
