@@ -1,7 +1,7 @@
 var socket;
 var started = false;
 
-const nextRoundMessage = function() {
+const showRealAnswer = function() {
 
 };
 
@@ -11,7 +11,6 @@ const updateMessage = function(msg) {
     started = true;
   }
   $("#participants-list").show();
-  nextRoundMessage();
   let p = $("#message")[0];
   p.textContent = msg;
 };
@@ -81,5 +80,8 @@ $(document).ready(function () {
   });
   socket.on('participants', function(participants) {
     updateParticipants(participants);
+  });
+  socket.on('real answer', function(participants) {
+    showRealAnswer(participants);
   });
 });

@@ -7,20 +7,33 @@ class Game {
     this.resetGame();
   }
 
-  async nextRound(force = false) {
-    if (force || this.everybodyAnswered()) {
+  async nextRound() {
+    await this.pickRandomMessage();
+    for (const [key, value] of Object.entries(this.players)) {
+      let sp = this.simplePlayers[value.id];
+      sp.answered = false;
+      value.socket.emit('update message', this.currentMessage[0].content);
+      this.updatePlayer(sp);
+    }
+  }
+
+  announceWinnersAndAnswer() {
+    if (this.everybodyAnswered()) {
       for (const [key, value] of Object.entries(this.players)) {
         if (this.currentMessage != null && value.lastAnswer === this.currentMessage.sender) {
           value.points++;
-          this.simplePlayers[value.id].points++;
+          let sp = this.simplePlayers[value.id];
+          sp.points++;
+          sp.lost = false;
+        }
+        else {
+          this.simplePlayers[value.id].lost = true;
         }
         value.lastAnswer = null;
-      }
-      await this.pickRandomMessage();
-      for (const [key, value] of Object.entries(this.players)) {
-        value.socket.emit('update message', this.currentMessage[0].content);
+        value.socket.emit('real answer', this.currentMessage[0].sender);
         this.updatePlayer(this.simplePlayers[value.id]);
       }
+      setTimeout(async function() { await this.nextRound() }.bind(this), 5000);
     }
   }
 
@@ -72,7 +85,7 @@ class Game {
       for (const [key, value] of Object.entries(this.players)) {
         value.socket.emit('participants', this.participants);
       }
-      await this.nextRound(true);
+      await this.nextRound();
     }
   }
 
@@ -101,7 +114,10 @@ class Game {
     let p = this.players[id];
     if (p !== undefined && p.lastAnswer === null) {
       p.lastAnswer = answer;
-      await this.nextRound();
+      let sp = this.simplePlayers[p.id];
+      sp.answered = true;
+      this.updatePlayer();
+      await this.announceWinnersAndAnswer();
     }
   }
 
