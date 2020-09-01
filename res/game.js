@@ -1,8 +1,8 @@
 var socket;
 var started = false;
 
-const showRealAnswer = function() {
-
+const showRealAnswer = function(answer) {
+  $("#sender").innerText = answer;
 };
 
 const updateMessage = function(msg) {
@@ -17,7 +17,7 @@ const updateMessage = function(msg) {
 
 const removePlayer = function(sid) {
   $("#readyrow" + sid).remove();
-  //TODO score board
+  $("#scorerow" + sid).remove();
 };
 
 const updateParticipants = function(participants) {
@@ -41,19 +41,27 @@ const updatePlayer = function(player) {
       row.id = "readyrow" + player.id;
       row.insertCell(0);
       row.insertCell(1);
-    } else {
+    }
+    else {
       row = row[0];
     }
     row.cells[0].innerHTML = player.pseudo;
     row.cells[1].innerHTML = player.ready ? "Ready" : "Not ready";
   }
-  /*row = $("participantrow" + player.id);
+  row = $("#scorerow" + player.id);
   if (row.length === 0) {
-    row = $("#participants-list")[0].insertRow();
-    row.id = "participantrow" + player.id;
+    row = $("#scoreboard")[0].insertRow();
+    row.id = "scorerow" + player.id;
     row.insertCell(0);
     row.insertCell(1);
-  } TODO score board*/
+    row.insertCell(2);
+  }
+  else {
+    row = row[0];
+  }
+  row.cells[0].innerHTML = player.pseudo;
+  row.cells[1].innerHTML = player.points;
+  row.cells[2].innerHTML = player.answered ? "Answered" : "Didn't answered yet";
 };
 
 $(document).ready(function () {
@@ -81,7 +89,7 @@ $(document).ready(function () {
   socket.on('participants', function(participants) {
     updateParticipants(participants);
   });
-  socket.on('real answer', function(participants) {
-    showRealAnswer(participants);
+  socket.on('real answer', function(answer) {
+    showRealAnswer(answer);
   });
 });

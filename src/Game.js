@@ -12,7 +12,7 @@ class Game {
     for (const [key, value] of Object.entries(this.players)) {
       let sp = this.simplePlayers[value.id];
       sp.answered = false;
-      value.socket.emit('update message', this.currentMessage[0].content);
+      value.socket.emit('update message', this.currentMessage.content);
       this.updatePlayer(sp);
     }
   }
@@ -30,7 +30,7 @@ class Game {
           this.simplePlayers[value.id].lost = true;
         }
         value.lastAnswer = null;
-        value.socket.emit('real answer', this.currentMessage[0].sender);
+        value.socket.emit('real answer', this.currentMessage.sender);
         this.updatePlayer(this.simplePlayers[value.id]);
       }
       setTimeout(async function() { await this.nextRound() }.bind(this), 5000);
@@ -76,6 +76,7 @@ class Game {
       this.endGame();
       return;
     }
+    this.announceWinnersAndAnswer();
     this.updateRemovePlayer(sid);
   }
 
@@ -106,7 +107,7 @@ class Game {
     if (!this.started) {
       throw new Error("Game not started!");
     }
-    this.currentMessage = await this.db.getRandomMessage(this.participants);
+    this.currentMessage = (await this.db.getRandomMessage(this.participants))[0];
     return this.currentMessage;
   }
 
@@ -116,7 +117,7 @@ class Game {
       p.lastAnswer = answer;
       let sp = this.simplePlayers[p.id];
       sp.answered = true;
-      this.updatePlayer();
+      this.updatePlayer(sp);
       await this.announceWinnersAndAnswer();
     }
   }
