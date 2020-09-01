@@ -1,10 +1,20 @@
 class Player {
 
-  constructor(id, pseudo) {
-    this.pseudo = pseudo;
-    this.id = id;
+  constructor(socket) {
+    this.pseudo = 'Guest';
+    this.id = socket.id;
+    this.socket = socket;
     this.points = 0;
     this.lastAnswer = null;
+  }
+
+  handleSocket() {
+    this.socket.on('disconnect', () => {
+      wwtGame.removePlayer(this.id);
+    });
+    this.socket.on('answer', async (answer) => {
+      await wwtGame.playerAnswer(this.id, answer);
+    });
   }
 }
 

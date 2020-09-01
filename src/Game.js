@@ -1,3 +1,5 @@
+const SimplifiedPlayer = require('./SimplifiedPlayer');
+
 class Game {
 
   constructor(db) {
@@ -5,9 +7,16 @@ class Game {
     this.resetGame();
   }
 
-  nextRound() {
-    if (this.everybodyAnswered()) {
-      this.pickRandomMessage();
+  async nextRound(force = false) {
+    if (force || this.everybodyAnswered()) {
+      for (const [key, value] of Object.entries(this.players)) {
+        value.lastAnswer = null;
+      }
+      await this.pickRandomMessage();
+      for (const [key, value] of Object.entries(this.players)) {
+        value.socket.emit('update message', this.currentMessage[0].content);
+        this.updatePlayer(this.simplePlayers[value.id]);
+      }
     }
   }
 
@@ -26,21 +35,28 @@ class Game {
 
   addPlayer(player) {
     this.players[player.id] = player;
+    this.simplePlayers[player.id] = new SimplifiedPlayer(player.id.substr(0, player.id.length / 2), player.pseudo);
+    this.updatePlayer(this.simplePlayers[player.id]);
   }
 
   removePlayer(id) {
     delete this.players[id];
+    let sid = this.simplePlayers[id].id;
+    delete this.simplePlayers[id];
+    this.updateRemovePlayer(sid);
   }
 
-  start() {
-    if (!this.participants) {
+  async start() {
+    if (this.participants.length !== 0) {
       this.started = true;
+      await this.nextRound(true);
     }
   }
 
   resetGame() {
     this.participants = null;
     this.players = {};
+    this.simplePlayers = {};
     this.started = false;
     this.currentMessage = null;
   }
@@ -50,19 +66,31 @@ class Game {
     this.resetGame();
   }
 
-  pickRandomMessage() {
+  async pickRandomMessage() {
     if (!this.started) {
       throw new Error("Game not started!");
     }
-    this.currentMessage = this.db.getRandomMessage(this.participants);
+    this.currentMessage = await this.db.getRandomMessage(this.participants);
     return this.currentMessage;
   }
 
-  playerAnswer(id, answer) {
+  async playerAnswer(id, answer) {
     let p = this.players[id];
     if (p !== undefined) {
       p.lastAnswer = answer;
-      this.nextRound();
+      await this.nextRound();
+    }
+  }
+
+  updatePlayer(simplifiedPlayer) {
+    for (const [key, value] of Object.entries(this.players)) {
+      value.socket.emit('update player', simplifiedPlayer);
+    }
+  }
+
+  updateRemovePlayer(sid) {
+    for (const [key, value] of Object.entries(this.players)) {
+      value.socket.emit('remove player', sid);
     }
   }
 }
