@@ -1,6 +1,7 @@
 const sqlite3 = require('sqlite3');
 const fs = require('fs');
 const sha256File = require('sha256-file');
+const utf8 = require('utf8');
 
 class Database {
 
@@ -59,7 +60,7 @@ class Database {
     for (let i = 0; i < messages.length; ++i) {
       const msg = messages[i];
       if (msg.content) {
-        this.db.run('INSERT INTO messages VALUES (?, ?, ?, ?);', [msg.sender_name, msg.timestamp_ms, msg.content, typeToInt(msg.type)]);
+        this.db.run('INSERT INTO messages VALUES (?, ?, ?, ?);', [utf8.decode(msg.sender_name), msg.timestamp_ms, utf8.decode(msg.content), typeToInt(msg.type)]);
       }
     }
   }
@@ -73,7 +74,7 @@ class Database {
     this.db.run("BEGIN TRANSACTION");
     for (let i = 0; i < filesIds.length; ++i) {
       try {
-        this.addJsonToDatabase(JSON.parse(fs.readFileSync('databases/json/' + this.group + '/message_' + filesIds[i] + '.json', 'utf-8')));
+        this.addJsonToDatabase(JSON.parse(fs.readFileSync('databases/json/' + this.group + '/message_' + filesIds[i] + '.json', 'ascii')));
         console.log('Processing message_' + filesIds[i] + '.json...');
       } catch {
         console.log('message_' + filesIds[i] + '.json is not valid !');
