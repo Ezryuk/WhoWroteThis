@@ -4,6 +4,7 @@ class Player {
     this.pseudo = pseudo;
     this.id = id;
     this.points = 0;
+    this.lastAnswer = null;
   }
 }
 
