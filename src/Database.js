@@ -72,8 +72,12 @@ class Database {
     console.log('Converting json to sqlite...');
     this.db.run("BEGIN TRANSACTION");
     for (let i = 0; i < filesIds.length; ++i) {
-      this.addJsonToDatabase(JSON.parse(fs.readFileSync('databases/json/' + this.group + '/message_' + filesIds[i] + '.json', 'utf8')));
-      console.log('Processing message_' + filesIds[i] + '.json...');
+      try {
+        this.addJsonToDatabase(JSON.parse(fs.readFileSync('databases/json/' + this.group + '/message_' + filesIds[i] + '.json', 'utf-8')));
+        console.log('Processing message_' + filesIds[i] + '.json...');
+      } catch {
+        console.log('message_' + filesIds[i] + '.json is not valid !');
+      }
       this.db.run('REPLACE INTO hashes VALUES (?, ?);', [filesIds[i], sha256File('databases/json/' + this.group + '/message_' + filesIds[i] + '.json')]);
     }
     this.db.run("COMMIT", () => {
