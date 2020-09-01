@@ -2,7 +2,7 @@ var socket;
 var started = false;
 
 const showRealAnswer = function(answer) {
-  $("#sender").innerText = answer;
+  $("#sender")[0].innerText = answer;
 };
 
 const updateMessage = function(msg) {
@@ -10,6 +10,7 @@ const updateMessage = function(msg) {
     $("#overlay").hide();
     started = true;
   }
+  $("#sender")[0].innerText = "";
   $("#participants-list").show();
   let p = $("#message")[0];
   p.textContent = msg;

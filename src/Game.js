@@ -4,10 +4,12 @@ class Game {
 
   constructor(db) {
     this.db = db;
+    this.blocked = true;
     this.resetGame();
   }
 
   async nextRound() {
+    this.blocked = false;
     await this.pickRandomMessage();
     for (const [key, value] of Object.entries(this.players)) {
       let sp = this.simplePlayers[value.id];
@@ -18,7 +20,7 @@ class Game {
   }
 
   announceWinnersAndAnswer() {
-    if (this.everybodyAnswered()) {
+    if (!this.blocked && this.everybodyAnswered()) {
       for (const [key, value] of Object.entries(this.players)) {
         if (this.currentMessage != null && value.lastAnswer === this.currentMessage.sender) {
           value.points++;
@@ -33,6 +35,7 @@ class Game {
         value.socket.emit('real answer', this.currentMessage.sender);
         this.updatePlayer(this.simplePlayers[value.id]);
       }
+      this.blocked = true;
       setTimeout(async function() { await this.nextRound() }.bind(this), 5000);
     }
   }
