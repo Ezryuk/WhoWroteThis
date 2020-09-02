@@ -3,7 +3,7 @@
 This game is played on browser and uses JSON files from Facebook archives and a Node.js server.<br/>
 It can be played in multiplayer. With each message found, the player get one point.
 
-#Usage
+# Usage
 You first have to install Node.js on your device.<br/>
 Then, you have to install all the necessary modules by opening a console at the root of the project and typing this command :
 ```
