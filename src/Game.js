@@ -151,6 +151,17 @@ class Game {
     sp.ready = false;
     this.updatePlayer(sp);
   }
+  
+  async changePseudo(id, newPseudo) {
+    if (!newPseudo || newPseudo.length == 0) {
+      return;
+    }
+	const player = this.players[id];
+	player.pseudo = newPseudo.length > 20 ? newPseudo.substr(0, 19) : newPseudo;
+	const sp = this.simplePlayers[id];
+    sp.pseudo = player.pseudo;
+    this.updatePlayer(sp);
+  }
 }
 
 module.exports = Game;

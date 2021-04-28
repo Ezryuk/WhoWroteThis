@@ -77,6 +77,12 @@ $(document).ready(function () {
   $("#participants-list").delegate('tr', 'click', function() {
     answer($(this).children('td')[0].innerText);
   });
+  $("#change-pseudo-button").click(function() {
+	  socket.emit('change pseudo', $("#pseudo-input")[0].value);
+  });
+  $("#change-pseudo-button-scoreboard").click(function() {
+	  socket.emit('change pseudo', $("#pseudo-input-scoreboard")[0].value);
+  });
   socket = io();
   socket.on('update message', function(msg) {
     updateMessage(msg);

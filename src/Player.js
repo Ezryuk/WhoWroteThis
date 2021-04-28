@@ -23,6 +23,9 @@ class Player {
     this.socket.on('unready', async () => {
       await wwtGame.playerUnready(this.id);
     });
+	this.socket.on('change pseudo', async(newPseudo) => {
+	  await wwtGame.changePseudo(this.id, newPseudo);
+	});
   }
 }
 
