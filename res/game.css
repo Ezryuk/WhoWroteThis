@@ -59,3 +59,15 @@ body {
 	width: 500px;
 	margin: auto;
 }
+
+#scoreboard-col {
+	flex: 0 0 25%;
+}
+
+#conversation-col {
+	flex: 0 0 50%;
+}
+
+#sender-col {
+	flex: 0 0 25%;
+}
