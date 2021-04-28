@@ -55,19 +55,37 @@ body {
 	margin-right: 50px;
 }
 
+#pseudo-input-scoreboard {
+	width: 200px;
+	margin: auto;
+}
+
 #pseudo-input-group {
 	width: 500px;
 	margin: auto;
 }
 
 #scoreboard-col {
-	flex: 0 0 25%;
+	flex: 0 0 35%;
 }
 
 #conversation-col {
-	flex: 0 0 50%;
+	flex: 0 0 30%;
 }
 
 #sender-col {
-	flex: 0 0 25%;
+	flex: 0 0 35%;
+}
+
+#message-context {
+	text-align: left;
+}
+
+.context-sender {
+	color: lightblue;
+}
+
+.context-date {
+	float: right;
+	color: grey;
 }

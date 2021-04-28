@@ -18,9 +18,17 @@ class Game {
       this.updatePlayer(sp);
     }
   }
+  
+  async sendMessageContext(msg) {
+	let messages = await this.db.getMessagesBefore(10, msg.timestamp);
+	for (const [key, value] of Object.entries(this.players)) {
+	  value.socket.emit('msg context', messages);
+	}
+  }
 
   announceWinnersAndAnswer() {
     if (!this.blocked && this.everybodyAnswered()) {
+	  this.sendMessageContext(this.currentMessage);
       for (const [key, value] of Object.entries(this.players)) {
         if (this.currentMessage != null && value.lastAnswer === this.currentMessage.sender) {
           value.points++;

@@ -10,7 +10,7 @@ const updateMessage = function(msg) {
     $("#overlay").hide();
     started = true;
   }
-  $("#sender")[0].innerText = "";
+  //$("#sender")[0].innerText = "";
   $("#participants-list").show();
   let p = $("#message")[0];
   p.textContent = msg;
@@ -46,7 +46,7 @@ const updatePlayer = function(player) {
     else {
       row = row[0];
     }
-    row.cells[0].innerHTML = player.pseudo;
+    row.cells[0].innerHTML = escapeHtml(player.pseudo);
     row.cells[1].innerHTML = player.ready ? "Ready" : "Not ready";
   }
   row = $("#scorerow" + player.id);
@@ -60,10 +60,28 @@ const updatePlayer = function(player) {
   else {
     row = row[0];
   }
-  row.cells[0].innerHTML = player.pseudo;
+  row.cells[0].innerHTML = escapeHtml(player.pseudo);
   row.cells[1].innerHTML = player.points;
   row.cells[2].innerHTML = player.answered ? "Answered" : "Didn't answered yet";
 };
+
+const escapeHtml = function(unsafe) {
+    return unsafe
+         .replace(/&/g, "&amp;")
+         .replace(/</g, "&lt;")
+         .replace(/>/g, "&gt;")
+         .replace(/"/g, "&quot;")
+         .replace(/'/g, "&#039;");
+ }
+
+const setMessageContext = function(messages) {
+	let html = "";
+	for (let i = messages.length - 1; i >= 0; --i) {
+		const date = new Date(messages[i].timestamp);
+		html += "<p><span class=\"context-sender\">" + messages[i].sender + "</span><span class=\"context-date\">" + date.getDate().toLocaleString('en-US', {minimumIntegerDigits: 2, useGrouping:false}) + "/" + (date.getMonth() + 1).toLocaleString('en-US', {minimumIntegerDigits: 2, useGrouping:false}) + "/" + date.getFullYear() + " at " + date.getHours().toLocaleString('en-US', {minimumIntegerDigits: 2, useGrouping:false}) + ":" + date.getMinutes().toLocaleString('en-US', {minimumIntegerDigits: 2, useGrouping:false}) + ":" + date.getSeconds().toLocaleString('en-US', {minimumIntegerDigits: 2, useGrouping:false}) + "</span><br/>" + messages[i].content + "</p>";
+	}
+	$("#message-context")[0].innerHTML = html;
+}
 
 $(document).ready(function () {
   $('#customCheck1').change(function() {
@@ -98,5 +116,8 @@ $(document).ready(function () {
   });
   socket.on('real answer', function(answer) {
     showRealAnswer(answer);
+  });
+  socket.on('msg context', function(msgs) {
+	 setMessageContext(msgs);
   });
 });

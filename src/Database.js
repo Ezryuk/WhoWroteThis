@@ -51,6 +51,17 @@ class Database {
       });
     });
   }
+  
+  getMessagesBefore(limit, timestamp) {
+	return new Promise((resolve, reject) => {
+	  this.db.all(`SELECT * FROM messages WHERE timestamp <= ? ORDER BY timestamp DESC LIMIT ?;`, timestamp, limit, (err, rows) => {
+		if (err) {
+          reject(err);
+        }
+        resolve(rows);
+	  }); 
+	});
+  }
 
   addJsonToDatabase(json) {
     const typeToInt = function(type) {
