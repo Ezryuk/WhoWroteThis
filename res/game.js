@@ -12,8 +12,16 @@ const updateMessage = function(msg) {
   }
   //$("#sender")[0].innerText = "";
   $("#participants-list").show();
+  const scores = $("#scoreboard")[0].rows;
   let p = $("#message")[0];
   p.textContent = msg;
+  for (let i = 1; i < scores.length; ++i) {
+	const expr = scores[i].cells[1].innerHTML;
+	if (expr.includes("+")) {
+	  const split = expr.split("+");
+	  scores[i].cells[1].innerHTML = parseInt(split[0]) + parseInt(split[1]);
+	}
+  }
 };
 
 const removePlayer = function(sid) {
@@ -61,7 +69,18 @@ const updatePlayer = function(player) {
     row = row[0];
   }
   row.cells[0].innerHTML = escapeHtml(player.pseudo);
-  row.cells[1].innerHTML = player.points;
+  if (row.cells[1].innerHTML != "") {
+	  const previousScore = parseInt(row.cells[1].innerHTML);
+	  if (!isNaN(previousScore) && player.points != previousScore) {
+		row.cells[1].innerHTML = previousScore + "+" + (player.points - previousScore);
+	  }
+	  else {
+		row.cells[1].innerHTML = player.points;
+	  }
+  }
+  else {
+	row.cells[1].innerHTML = player.points;
+  }
   row.cells[2].innerHTML = player.answered ? "Answered" : "Didn't answered yet";
 };
 
